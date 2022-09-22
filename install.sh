@@ -20,7 +20,6 @@ PM_Prerequisites(){
 	apt-get update
 	apt-get install openjdk-8-jdk ant maven postgresql-9.6 dos2unix -y
 	sed -i '$a JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-amd64/"' /etc/environment
-	rm apache-tomcat-8.5.78.tar.gz
 	ufw default deny incoming
 	ufw default allow outgoing
 	ufw allow 22
@@ -61,7 +60,7 @@ PM_Postgres_B(){
 	if [ "$Dream" = "$Land" ]
 	then
 		sudo -u postgres psql -c "ALTER USER dspace WITH PASSWORD '${Dream}';"
-		sed -i "s|db.password = dspace|db.password = ${Dream}|g" $DSPACE_PATH/dspace-source/dspace/config/dspace.cfg
+		sed -i "s|db.password = dspace|db.password = ${Dream}|g" $PWD/dspace-source/dspace/config/dspace.cfg
 		break
 	else
 		echo -e "Passwords didn't match. \n"
@@ -101,6 +100,7 @@ PM_Tomcat(){
 	wget -4 https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.78/bin/apache-tomcat-8.5.78.tar.gz
 	tar xvzf apache-tomcat-8.5.78.tar.gz
 	mv apache-tomcat-8.5.78 /opt/tomcat
+	rm apache-tomcat-8.5.78.tar.gz
 	####Java Memory Settings####
 	ram=$(awk '/^(MemTotal)/{print $2}' /proc/meminfo)
 	lim=12582912
