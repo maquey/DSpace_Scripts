@@ -16,9 +16,9 @@ EOF
 ########################## Module A ##########################
 PM_Prerequisites(){
 	echo "deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
-	wget -4 https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /usr/share/keyrings/postgresql.gpg
+	curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null
 	apt-get update
-	apt-get install openjdk-8-jdk ant maven postgresql-9.6 git ufw dos2unix -y
+	apt-get install openjdk-8-jdk ant maven postgresql-9.6 dos2unix -y
 	sed -i '$a JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-amd64/"' /etc/environment
 	rm apache-tomcat-8.5.78.tar.gz
 	ufw default deny incoming
@@ -167,10 +167,9 @@ export -f PM_Tomcat
 			else
 				PM_Prerequisites
 				mkdir /dspace
-				chown dspace /dspace
 				echo "Creating the user...."
 				useradd -m dspace
-				usermod -aG sudo dspace
+				chown dspace /dspace
 				#Module A
 				PM_DSpace_A
 				su postgres -c "bash -c PM_Postgres_A"
