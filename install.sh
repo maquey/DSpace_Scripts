@@ -40,7 +40,7 @@ PM_DSpace_D_Inst(){
 	mvn -U package
 	cd ./dspace/target/dspace-installer
 	ant fresh_install
-	rm -rf ~/.m2/repository
+	rm -rf "$HOME"/.m2/repository
 	
 }
 PM_Postgres_A(){
