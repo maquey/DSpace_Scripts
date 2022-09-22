@@ -20,13 +20,14 @@ PM_Prerequisites(){
 	apt-get update
 	apt-get install openjdk-8-jdk ant maven postgresql-9.6 dos2unix -y
 	sed -i '$a JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-amd64/"' /etc/environment
+	source /etc/environment
 	ufw default deny incoming
 	ufw default allow outgoing
 	ufw allow 22
 	ufw allow 80
 	ufw allow 443
 	ufw allow 8080
-	ufw enable      
+	ufw enable -y
 }
 PM_DSpace_A(){
 	source $DSCONF
