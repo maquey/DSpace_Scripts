@@ -8,7 +8,7 @@ DSPACE_URL=https://github.com/DSpace/DSpace/releases/download/dspace-5.11/dspace
 PSQL_SOU=/etc/postgresql/9.6/main
 JAVA_TCNANA=/opt/tomcat/bin/setenv.sh
 TCNANA_CON=/opt/tomcat/conf/server.xml
-TCATA=/var/lib/tomcat9/conf/Catalina/localhost
+TCATA=/opt/tomcat/conf/Catalina/localhost
 REPO_MURL=localhost
 EOF
 ###################################################
@@ -19,6 +19,8 @@ PM_Prerequisites(){
 	curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null
 	apt-get update
 	apt-get install openjdk-8-jdk ant maven postgresql-9.6 dos2unix -y
+	sed -i '$a JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-amd64/"' /etc/environment
+	source /etc/environment
 	ufw default deny incoming
 	ufw default allow outgoing
 	ufw allow 22
@@ -60,7 +62,7 @@ PM_Postgres_B(){
 	if [ "$Dream" = "$Land" ]
 	then
 		sudo -u postgres psql -c "ALTER USER dspace WITH PASSWORD '${Dream}';"
-		sed -i "s|db.password = dspace|db.password = ${Dream}|g" $PWD/dspace-source/dspace/config/dspace.cfg
+		sed -i "s|db.password = dspace|db.password = ${Dream}|g" "$PWD"/dspace-source/dspace/config/dspace.cfg
 		break
 	else
 		echo -e "Passwords didn't match. \n"
