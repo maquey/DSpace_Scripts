@@ -19,15 +19,13 @@ PM_Prerequisites(){
 	curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null
 	apt-get update
 	apt-get install openjdk-8-jdk ant maven postgresql-9.6 dos2unix -y
-	sed -i '$a JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-amd64/"' /etc/environment
-	source /etc/environment
 	ufw default deny incoming
 	ufw default allow outgoing
 	ufw allow 22
 	ufw allow 80
 	ufw allow 443
 	ufw allow 8080
-	ufw enable -y
+	ufw enable
 }
 PM_DSpace_A(){
 	source $DSCONF
@@ -38,7 +36,7 @@ PM_DSpace_A(){
 PM_DSpace_D_Inst(){
 	###
 	cd ./dspace-source
-	mvn -U package
+	JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-amd64/" mvn -U package
 	cd ./dspace/target/dspace-installer
 	ant fresh_install
 	rm -rf "$HOME"/.m2/repository
@@ -164,7 +162,7 @@ export -f PM_Tomcat
 				PM_DSpace_D_Inst
 				#Module B
 				PM_Tomcat
-				cp -r /dspace/webapps/* /opt/tomcat/webapps
+				ln -s /dspace/webapps/* /opt/tomcat/webapps
 				service tomcat start
 			else
 				PM_Prerequisites
@@ -175,9 +173,10 @@ export -f PM_Tomcat
 				#Module A
 				PM_DSpace_A
 				su postgres -c "bash -c PM_Postgres_A"
+				PM_Postgres_B && PM_Postgres_C
 				PM_DSpace_D_Inst
 				#Module B
 				PM_Tomcat
-				cp -r /dspace/webapps/* /opt/tomcat/webapps
+				ln -s /dspace/webapps/* /opt/tomcat/webapps
 				service tomcat start
 			fi
